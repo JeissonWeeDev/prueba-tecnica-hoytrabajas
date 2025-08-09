@@ -12,7 +12,7 @@
  * ? - BudgetCalculator: Ofrece sugerencias para combinaciones óptimas de productos según el presupuesto.
  *
  * @author Jeisson Leon (c) 2025 - Todos los derechos reservados.
- * @license Licencia MIT - Para más detalles, consulta el archivo LICENSE.
+ * @license MIT
  */
 
 "use client";
