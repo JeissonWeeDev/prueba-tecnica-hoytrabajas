@@ -1,10 +1,5 @@
 import { useState } from "react";
-import { Button } from "./ui";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui";
-import { Input } from "./ui";
-import { Label } from "./ui";
-import { Separator } from "./ui";
-import { Badge } from "./ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Separator, Badge } from "./ui";
 import { Calculator, TrendingUp } from "lucide-react";
 
 export function BudgetCalculator({ products, findBestCombination }) {
@@ -16,7 +11,7 @@ export function BudgetCalculator({ products, findBestCombination }) {
     if (isNaN(budgetValue) || budgetValue <= 0) {
       return;
     }
-
+    
     const bestCombination = findBestCombination(products, budgetValue);
     setResult(bestCombination);
   };
@@ -65,67 +60,54 @@ export function BudgetCalculator({ products, findBestCombination }) {
                   Limpiar
                 </Button>
               </div>
-
+              
               {result.products.length === 0 ? (
-                <p className="text-muted-foreground">
+                <p className="text-gray-500">
                   No hay productos disponibles que encajen en tu presupuesto.
                 </p>
               ) : (
                 <>
                   <div className="space-y-3">
                     {result.products.map((product) => (
-                      <div key={product.id} className="p-3 bg-muted rounded-md">
+                      <div key={product.id} className="p-3 bg-gray-50 rounded-md border border-gray-200">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium">
-                                {product.name}
-                              </span>
+                              <span className="font-medium text-gray-900">{product.name}</span>
                               <Badge variant="outline" className="text-xs">
                                 {product.category}
                               </Badge>
                             </div>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-gray-600">
                               {product.description}
                             </p>
                           </div>
-                          <span className="font-semibold">
-                            ${product.price.toFixed(2)}
-                          </span>
+                          <span className="font-semibold text-slate-900">${product.price.toFixed(2)}</span>
                         </div>
                       </div>
                     ))}
                   </div>
-
+                  
                   <Separator />
-
+                  
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span>Presupuesto:</span>
-                      <span className="font-semibold">
-                        ${parseFloat(budget).toFixed(2)}
-                      </span>
+                      <span className="text-gray-700">Presupuesto:</span>
+                      <span className="font-semibold">${parseFloat(budget).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Total optimizado:</span>
-                      <span className="font-semibold text-primary">
-                        ${result.total.toFixed(2)}
-                      </span>
+                      <span className="text-gray-700">Total optimizado:</span>
+                      <span className="font-semibold text-slate-900">${result.total.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Sobrante:</span>
-                      <span className="font-semibold text-green-600">
-                        ${result.remaining.toFixed(2)}
-                      </span>
+                      <span className="text-gray-700">Sobrante:</span>
+                      <span className="font-semibold text-green-600">${result.remaining.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-sm text-muted-foreground">
+                    <div className="flex justify-between text-sm text-gray-500">
                       <span>Eficiencia:</span>
-                      <span>
-                        {((result.total / parseFloat(budget)) * 100).toFixed(1)}
-                        %
-                      </span>
+                      <span>{((result.total / parseFloat(budget)) * 100).toFixed(1)}%</span>
                     </div>
-                    <div className="text-xs text-muted-foreground pt-1">
+                    <div className="text-xs text-gray-500 pt-1">
                       * Solo se consideran productos en stock
                     </div>
                   </div>
