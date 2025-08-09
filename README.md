@@ -1,110 +1,92 @@
-# 🛒 Prueba Técnica – API y Carrito de Compras (Next.js 14 + Bun)
+# 🛒 Prueba Técnica – API y Carrito de Compras (Next.js 14 + Bun.js)
 
-Este proyecto es mi propuesta de solución para la prueba técnica de HoyTrabajas.
-Desarrollé una API sencilla para gestionar productos y un carrito de compras, junto con un frontend que interactúa con ella.
-Además, incluye una función que calcula la mejor combinación de productos según un presupuesto máximo.
+Este proyecto es mi propuesta de solución para la prueba técnica de HoyTrabajas. Desarrollé una API sencilla para gestionar productos y un carrito de compras, junto con un frontend que interactúa con ella. Además, incluye una función que calcula la mejor combinación de productos según un presupuesto máximo.
+
+## 📓 Proceso de creacion Notion
+https://www.notion.so/Prueba-tecnica-HoyTrabajas-24a5a85f3559808a91b9c2e850cb11e8?source=copy_link
 
 ## 🚀 Tecnologías utilizadas
 
-- **Next.js 14 (App Router)** → API y frontend en un solo proyecto.
-- **React** → Componentes y UI.
-- **JavaScript** → Mi lenguaje preferido para un desarrollo ágil.
-- **Bun.js** → Gestor y runtime rápido (compatible con `npm` y `pnpm`).
-- **Vercel** → Deploy rápido y sin configuración extra.
+* **Next.js 14 (App Router)** → API y frontend en un solo proyecto.
+* **React** → Componentes y UI.
+* **JavaScript** → Desarrollo ágil.
+* **Bun.js** → Gestor y runtime rápido (compatible con npm y pnpm).
+* **Vercel** → Deploy rápido y sin configuración extra.
 
-## 📂 Estructura del proyecto
+## 📌 Decisiones técnicas
+
+* **Carrito en memoria**, sin base de datos (se reinicia al apagar el servidor).
+* **SSR** para carga inicial de productos.
+* **Código modular** con separación de lógica y UI.
+
+## 📂 Estructura
 
 ```
-/app
- ├── /api
- │    ├── products/route.js      # Endpoint GET lista de productos
- │    └── cart/route.js          # Endpoint GET y POST para carrito
- ├── /components
- │    ├── ProductList.jsx        # Lista de productos
- │    ├── CartView.jsx           # Vista del carrito
- │    └── BudgetCalculator.jsx   # Calculadora de combinación por presupuesto
- ├── page.js                     # Página principal
-/lib
- ├── products.js                 # Lista estática de productos
- └── findBestCombination.js      # Lógica de cálculo de combinaciones
-package.json
-README.md
+├── README.md
+├── src
+│   ├── app
+│   │   ├── api
+│   │   │   ├── cart/route.js
+│   │   │   └── products/route.js
+│   │   ├── globals.css
+│   │   ├── layout.jsx
+│   │   └── page.jsx
+│   ├── components
+│   │   ├── BudgetCalculator.jsx
+│   │   ├── CartView.jsx
+│   │   ├── ProductList.jsx
+│   │   └── ui.jsx
+│   └── lib
+│       ├── findBestCombination.js
+│       └── products.js
 ```
 
-## 📌 Funcionalidades
+## 🧮 Funcionalidades
 
-### **Backend (API)**
+**Backend (API)**
 
-- **GET /api/products** → Obtiene una lista estática de productos.
-- **POST /api/cart** → Añade un producto al carrito (en memoria) usando su `productId`.
-- **GET /api/cart** → Muestra el estado actual del carrito con los productos agregados.
+* `GET /api/products` → Lista estática de productos.
+* `POST /api/cart` → Añade un producto al carrito por `productId`.
+* `GET /api/cart` → Devuelve el carrito actual.
+* CRUD básico para manipular productos en el carrito.
 
-> Importante: El carrito se mantiene en memoria (no hay base de datos), así que se reinicia si el servidor se apaga (IMPORTANTE).
+**Frontend**
 
-### **Frontend**
+* Lista de productos obtenida desde la API.
+* Botón **Agregar al carrito**.
+* Vista del carrito con total calculado.
+* Calculadora para mejor combinación de productos sin exceder presupuesto.
 
-- Lista de productos obtenida desde la API.
-- Botón “Agregar al carrito” para enviar productos al backend.
-- Vista del carrito con el total calculado.
-- Calculadora para encontrar la mejor combinación de productos sin exceder un presupuesto.
+**Lógica – `findBestCombination`**
 
-## 🧮 Lógica – findBestCombination
+* Entrada: lista de productos y presupuesto.
+* Salida: combinación óptima sin superar el presupuesto.
+* Ejemplo: presupuesto = 150 → \[Producto 1 (60), Producto 4 (70)] con total 130.
 
-Esta función toma:
+## 📊 Diagrama de flujo
 
-- Una lista de productos (array).
-- Un presupuesto máximo (número).
-
-Y devuelve:
-
-- Lista de productos cuya suma sea la más alta posible sin superar el presupuesto.
-- Ejemplo: presupuesto = 150  
-  Resultado → [Producto 1 (60), Producto 4 (70)] con total 130.
+![alt text](diagrama_de_projecto.png)
 
 ## 🖥️ Instalación y ejecución
 
-> **Antes de empezar**: Necesitas tener instalado [Bun.js](https://bun.sh/) o, en su lugar, `npm` o `pnpm`.
-
-### **Clonar el repositorio**
 ```bash
 git clone https://github.com/JeissonWeeDev/prueba-tecnica-hoytrabajas
-cd carrito-hoytrabajas
+
+cd prueba-tecnica-hoytrabajas
+
+bun install # o npm/pnpm install
+
+bun dev     # o npm run dev / pnpm dev
 ```
 
-### **Instalar dependencias**
-
-Con Bun:
-bun install
-
-Con npm:
-npm install
-
-Con pnpm:
-pnpm install
-
-### **Ejecutar en desarrollo**
-
-Con Bun:
-bun dev
-
-Con npm:
-npm run dev
-
-Con pnpm:
-pnpm dev
-
-El proyecto estará disponible en:  
-http://localhost:3000
+El proyecto estará disponible en `http://localhost:3000`
 
 ## 📄 Notas importantes
 
-- No implementé autenticación ni manejo de stock, ya que no eran parte de los requisitos.
-- El carrito no persiste datos (se guarda en memoria del servidor).
-- La carga inicial de productos usa SSR para optimizar tiempos de respuesta.
-- Compatible con **Bun**, **npm** y **pnpm**.
-
----
+* No implementé autenticación ni manejo de stock para tener un limite de productos agregados en funcion de su disponibilidad.
+* Carrito no persistente al recargar.
+* Compatible con Bun, npm, pnpm y yarn.
 
 ## ✨ Autor
 
-**Jeisson Leon (c) 2025**
+Jeisson Leon © 2025
