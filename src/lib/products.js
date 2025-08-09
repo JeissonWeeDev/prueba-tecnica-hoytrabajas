@@ -61,3 +61,45 @@ export const products = [
     stock: 0, // Agotado
   },
 ];
+
+// Función para encontrar la mejor combinación de productos dentro del presupuesto
+export function findBestCombination(availableProducts, budget) {
+  if (!availableProducts || availableProducts.length === 0 || budget <= 0) {
+    return { products: [], total: 0 };
+  }
+
+  // Filtrar solo productos en stock
+  const productsInStock = availableProducts.filter(
+    (product) => product.stock > 0
+  );
+
+  let bestCombination = [];
+  let bestTotal = 0;
+
+  // Generar todas las combinaciones posibles usando bits
+  const totalCombinations = Math.pow(2, productsInStock.length);
+
+  for (let i = 1; i < totalCombinations; i++) {
+    const currentCombination = [];
+    let currentTotal = 0;
+
+    for (let j = 0; j < productsInStock.length; j++) {
+      if (i & (1 << j)) {
+        currentCombination.push(productsInStock[j]);
+        currentTotal += productsInStock[j].price;
+      }
+    }
+
+    // Si esta combinación está dentro del presupuesto y es mejor que la actual
+    if (currentTotal <= budget && currentTotal > bestTotal) {
+      bestCombination = currentCombination;
+      bestTotal = currentTotal;
+    }
+  }
+
+  return {
+    products: bestCombination,
+    total: bestTotal,
+    remaining: budget - bestTotal,
+  };
+}
