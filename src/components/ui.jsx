@@ -1,22 +1,24 @@
 import { forwardRef } from "react";
 import { cva } from "class-variance-authority";
+import { clsx } from "clsx";
+
+// Utility function for merging classes
+export function cn(...inputs) {
+  return clsx(inputs);
+}
 
 // Button Component
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        default: "bg-slate-900 text-white shadow hover:bg-slate-800",
+        destructive: "bg-red-500 text-white shadow-sm hover:bg-red-600",
+        outline: "border border-gray-300 bg-white shadow-sm hover:bg-gray-50 hover:text-gray-900",
+        secondary: "bg-gray-100 text-gray-900 shadow-sm hover:bg-gray-200",
+        ghost: "hover:bg-gray-100 hover:text-gray-900",
+        link: "text-slate-900 underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 px-4 py-2",
@@ -32,60 +34,70 @@ const buttonVariants = cva(
   }
 );
 
-export const Button = forwardRef(
-  ({ className = "", variant, size, ...props }, ref) => {
-    return (
-      <button
-        className={`${buttonVariants({ variant, size })} ${className}`}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
+export const Button = forwardRef(({ className = "", variant, size, ...props }, ref) => {
+  return (
+    <button
+      className={cn(buttonVariants({ variant, size }), className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
+Button.displayName = "Button";
 
 // Card Components
 export const Card = forwardRef(({ className = "", ...props }, ref) => (
   <div
     ref={ref}
-    className={`rounded-xl border bg-card text-card-foreground shadow ${className}`}
+    className={cn("rounded-lg border border-gray-200 bg-white text-gray-950 shadow-sm", className)}
     {...props}
   />
 ));
+Card.displayName = "Card";
 
 export const CardHeader = forwardRef(({ className = "", ...props }, ref) => (
-  <div
-    ref={ref}
-    className={`flex flex-col space-y-1.5 p-6 ${className}`}
-    {...props}
-  />
+  <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
 ));
+CardHeader.displayName = "CardHeader";
 
 export const CardTitle = forwardRef(({ className = "", ...props }, ref) => (
   <h3
     ref={ref}
-    className={`font-semibold leading-none tracking-tight ${className}`}
+    className={cn("text-lg font-semibold leading-none tracking-tight", className)}
     {...props}
   />
 ));
+CardTitle.displayName = "CardTitle";
 
 export const CardContent = forwardRef(({ className = "", ...props }, ref) => (
-  <div ref={ref} className={`p-6 pt-0 ${className}`} {...props} />
+  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
 ));
+CardContent.displayName = "CardContent";
+
+export const CardDescription = forwardRef(({ className = "", ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-sm text-gray-500", className)}
+    {...props}
+  />
+));
+CardDescription.displayName = "CardDescription";
+
+export const CardFooter = forwardRef(({ className = "", ...props }, ref) => (
+  <div ref={ref} className={cn("flex items-center p-6 pt-0", className)} {...props} />
+));
+CardFooter.displayName = "CardFooter";
 
 // Badge Component
 const badgeVariants = cva(
-  "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2",
   {
     variants: {
       variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
-        outline: "text-foreground",
+        default: "border-transparent bg-slate-900 text-white hover:bg-slate-800",
+        secondary: "border-transparent bg-gray-100 text-gray-900 hover:bg-gray-200",
+        destructive: "border-transparent bg-red-500 text-white hover:bg-red-600",
+        outline: "text-gray-950 border-gray-200",
       },
     },
     defaultVariants: {
@@ -96,7 +108,7 @@ const badgeVariants = cva(
 
 export const Badge = ({ className = "", variant, ...props }) => {
   return (
-    <div className={`${badgeVariants({ variant })} ${className}`} {...props} />
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
   );
 };
 
@@ -105,36 +117,42 @@ export const Input = forwardRef(({ className = "", type, ...props }, ref) => {
   return (
     <input
       type={type}
-      className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={cn(
+        "flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
       ref={ref}
       {...props}
     />
   );
 });
+Input.displayName = "Input";
 
 // Label Component
 export const Label = forwardRef(({ className = "", ...props }, ref) => (
   <label
     ref={ref}
-    className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}
+    className={cn(
+      "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+      className
+    )}
     {...props}
   />
 ));
+Label.displayName = "Label";
 
 // Separator Component
-export const Separator = forwardRef(
-  (
-    { className = "", orientation = "horizontal", decorative = true, ...props },
-    ref
-  ) => (
-    <div
-      ref={ref}
-      role={decorative ? "none" : "separator"}
-      aria-orientation={orientation}
-      className={`shrink-0 bg-border ${
-        orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]"
-      } ${className}`}
-      {...props}
-    />
-  )
-);
+export const Separator = forwardRef(({ className = "", orientation = "horizontal", decorative = true, ...props }, ref) => (
+  <div
+    ref={ref}
+    role={decorative ? "none" : "separator"}
+    aria-orientation={orientation}
+    className={cn(
+      "shrink-0 bg-gray-200",
+      orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
+      className
+    )}
+    {...props}
+  />
+));
+Separator.displayName = "Separator";
