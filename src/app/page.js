@@ -17,65 +17,128 @@
 
 "use client";
 
-import { useState } from "react";
-import ProductList from "@/component/ProductList";
-import CartView from "./components/CartView";
+import { useState, useEffect } from "react";
+import { ProductList } from "./components/ProductList";
+import { CartView } from "./components/CartView";
 import { BudgetCalculator } from "./components/BudgetCalculator";
-import { mockProducts, findBestCombination } from "./lib/findBestCombination";
+import { findBestCombination } from "./lib/products";
 
-export default function Home() {
-  // Estado del carrito de compras
+export default function App() {
+  const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  //? Agrega un producto al carrito
-  const addToCart = (product) => {
-    // No agregar si no hay stock
-    if (product.stock === 0) return; // No se agrega si no hay stock
+  // Cargar productos desde la API al montar el componente
+  useEffect(() => {
+    fetchProducts();
+    fetchCart();
+  }, []);
 
-    setCartItems((prev) => {
-      const existingItem = prev.find((item) => item.id === product.id);
-
-      // Si ya existe, incrementar cantidad
-      if (existingItem) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("/api/products");
+      const result = await response.json();
+      if (result.success) {
+        setProducts(result.data);
       }
-      // Si es nuevo, agregar al carrito
-      else {
-        return [
-          ...prev,
-          {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            quantity: 1,
-          },
-        ];
-      }
-    });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  //? Elimina un producto del carrito
-  const removeFromCart = (productId) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== productId));
+  const fetchCart = async () => {
+    try {
+      const response = await fetch("/api/cart");
+      const result = await response.json();
+      if (result.success) {
+        setCartItems(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+    }
   };
 
-  //? Actualiza la cantidad de un producto en el carrito
-  const updateQuantity = (productId, quantity) => {
-    // Si cantidad es 0, eliminar del carrito
-    if (quantity === 0) { // Si la cantidad es 0, se elimina del carrito
-      removeFromCart(productId);
+  const addToCart = async (product) => {
+    // Verificar que el producto tenga stock antes de agregar
+    if (product.stock === 0) {
       return;
     }
 
-    // Actualizar cantidad
-    setCartItems((prev) =>
-      prev.map((item) => (item.id === productId ? { ...item, quantity } : item))
-    );
+    try {
+      const response = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId: product.id }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        // Actualizar el carrito con la respuesta del servidor
+        setCartItems(result.data);
+      } else {
+        console.error("Error adding to cart:", result.message);
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
+
+  const removeFromCart = async (productId) => {
+    try {
+      const response = await fetch("/api/cart", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setCartItems(result.data);
+      } else {
+        console.error("Error removing from cart:", result.message);
+      }
+    } catch (error) {
+      console.error("Error removing from cart:", error);
+    }
+  };
+
+  const updateQuantity = async (productId, quantity) => {
+    try {
+      const response = await fetch("/api/cart", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId, quantity }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setCartItems(result.data);
+      } else {
+        console.error("Error updating cart:", result.message);
+      }
+    } catch (error) {
+      console.error("Error updating cart:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Cargando productos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,14 +151,14 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Main Layout contenedor */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6"> {/* Contenedor principal con diseño de cuadrícula */}
-          {/* Columna Izquierda - Lista de Productos */}
+        {/* Main Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Product List */}
           <div className="lg:col-span-2">
-            <ProductList products={mockProducts} onAddToCart={addToCart} />
+            <ProductList products={products} onAddToCart={addToCart} />
           </div>
 
-          {/* Columna Derecha - Carrito y Calculadora de Presupuesto */}
+          {/* Right Column - Cart and Budget Calculator */}
           <div className="space-y-6">
             <CartView
               cartItems={cartItems}
@@ -104,7 +167,7 @@ export default function Home() {
             />
 
             <BudgetCalculator
-              products={mockProducts}
+              products={products}
               findBestCombination={findBestCombination}
             />
           </div>
