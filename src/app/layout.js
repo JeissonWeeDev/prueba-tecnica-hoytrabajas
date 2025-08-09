@@ -1,6 +1,10 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import "./variables.css"; 
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata = {
   title: "Techinal Test - HoyTrabajas",
@@ -8,15 +12,10 @@ export const metadata = {
     "This is a technical test for HoyTrabajas was created by Jeison Leon",
 };
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
-
 export default function RootLayout({ children }) {
   return (
     <html lang="es" className={inter.className}>
-      <body className="bg-background text-foreground">
+      <body className="min-h-screen bg-background text-foreground">
         {children}
       </body>
     </html>
