@@ -18,8 +18,8 @@
 "use client";
 
 import { useState } from "react";
-import { ProductList } from "./components/ProductList";
-import { CartView } from "./components/CartView";
+import ProductList from "@/component/ProductList";
+import CartView from "./components/CartView";
 import { BudgetCalculator } from "./components/BudgetCalculator";
 import { mockProducts, findBestCombination } from "./lib/findBestCombination";
 
