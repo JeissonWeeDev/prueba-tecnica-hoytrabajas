@@ -1,63 +1,165 @@
-/**
- * ! Este módulo define las rutas de la API para la gestión del carrito de compras.
- *
- * * Características:
- * * - Proporciona una ruta GET para obtener el contenido actual del carrito.
- * * - Proporciona una ruta POST para agregar productos al carrito.
- *
- * ? Uso recomendado:
- * ? - GET /api/cart → No requiere body, devuelve array de productos
- * ? - POST /api/cart → Espera {productId: number}, devuelve carrito actualizado
- * ?   Ejemplo body POST: {"productId": 1}
- *
- * TODO: Implementar rutas PUT y DELETE para modificar y eliminar productos del carrito.
- *
- * @author Jeisson Leon (c) 2025
- * @license MIT
- */
+import { NextResponse } from 'next/server';
+import { products } from '../../../lib/products.js';
 
-import { products } from "@/lib/products";
-
-// Carrito en memoria (variable global)
+// Variable global para simular el carrito en memoria del servidor
 let cart = [];
 
-//? GET → devolver carrito actual
-export async function GET() {
-  return new Response(JSON.stringify(cart), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+export async function GET(request) {
+  try {
+    return NextResponse.json({
+      success: true,
+      data: cart
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Internal server error'
+      },
+      { status: 500 }
+    );
+  }
 }
 
-//? POST → agregar producto al carrito
 export async function POST(request) {
   try {
     const { productId } = await request.json();
-
-    // Buscar producto en la lista de productos
-    const product = products.find((p) => p.id === productId);
-
-    if (!product) {
-      return new Response(
-        JSON.stringify({ error: "Producto no encontrado :(" }),
+    
+    if (!productId) {
+      return NextResponse.json(
         {
-          status: 404,
-          headers: { "Content-Type": "application/json" },
-        }
+          success: false,
+          message: 'productId is required'
+        },
+        { status: 400 }
       );
     }
 
-    //? Agregar producto al carrito ---------------------
-    cart.push(product);
+    // Buscar el producto en la base de datos
+    const product = products.find(p => p.id === productId);
+    
+    if (!product) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Product not found'
+        },
+        { status: 404 }
+      );
+    }
 
-    return new Response(
-      JSON.stringify({ message: "Producto agregado al carrito", cart }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    if (product.stock === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Product out of stock'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Buscar si el producto ya existe en el carrito
+    const existingItemIndex = cart.findIndex(item => item.id === productId);
+    
+    if (existingItemIndex !== -1) {
+      // Si existe, incrementar cantidad
+      cart[existingItemIndex].quantity += 1;
+    } else {
+      // Si no existe, agregarlo al carrito
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Product added to cart',
+      data: cart
+    });
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: "Error procesando la solicitud" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Internal server error'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const { productId } = await request.json();
+    
+    if (!productId) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'productId is required'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Filtrar el producto del carrito
+    cart = cart.filter(item => item.id !== productId);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Product removed from cart',
+      data: cart
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Internal server error'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request) {
+  try {
+    const { productId, quantity } = await request.json();
+    
+    if (!productId || quantity === undefined) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'productId and quantity are required'
+        },
+        { status: 400 }
+      );
+    }
+
+    if (quantity === 0) {
+      // Si la cantidad es 0, remover el producto
+      cart = cart.filter(item => item.id !== productId);
+    } else {
+      // Actualizar la cantidad
+      const itemIndex = cart.findIndex(item => item.id === productId);
+      if (itemIndex !== -1) {
+        cart[itemIndex].quantity = quantity;
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Cart updated',
+      data: cart
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Internal server error'
+      },
+      { status: 500 }
     );
   }
 }
