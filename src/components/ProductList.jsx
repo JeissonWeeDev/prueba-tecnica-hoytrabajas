@@ -1,26 +1,12 @@
-/**
- * Componente que muestra la lista de productos pa' la tienda
- *
- * @param {Array} products - Los productos que vamos a mostrar
- * @param {Function} onAddToCart - La función que se llama cuando le dan al botón de agregar
- *
- * @author Jeisson Leon (c) 2025
- */
-
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from "./ui";
 
 export function ProductList({ products, onAddToCart }) {
   return (
     <div className="space-y-4">
-      <h2 className="mb-6">Productos Disponibles</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Productos Disponibles</h2>
       <div className="grid gap-4">
         {products.map((product) => (
-          <Card
-            key={product.id}
-            className={`transition-shadow hover:shadow-md ${
-              product.stock === 0 ? "opacity-60" : ""
-            }`}
-          >
+          <Card key={product.id} className={`transition-shadow hover:shadow-lg ${product.stock === 0 ? 'opacity-60' : ''}`}>
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -32,34 +18,34 @@ export function ProductList({ products, onAddToCart }) {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground mb-2">
+                  <p className="text-sm text-gray-600 mb-2">
                     {product.description}
                   </p>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary">{product.category}</Badge>
+                    <Badge variant="secondary">
+                      {product.category}
+                    </Badge>
                     {product.stock > 0 && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-gray-500">
                         Stock: {product.stock}
                       </span>
                     )}
                   </div>
                 </div>
                 <div className="text-right ml-4">
-                  <p className="text-2xl font-semibold text-primary">
+                  <p className="text-2xl font-bold text-slate-900">
                     ${product.price.toFixed(2)}
                   </p>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
-              <Button
+              <Button 
                 onClick={() => onAddToCart(product)}
                 className="w-full"
                 disabled={product.stock === 0}
               >
-                {product.stock === 0
-                  ? "Producto Agotado"
-                  : "Agregar al carrito"}
+                {product.stock === 0 ? 'Producto Agotado' : 'Agregar al carrito'}
               </Button>
             </CardContent>
           </Card>
