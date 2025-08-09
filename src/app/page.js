@@ -18,12 +18,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ProductList from "@/components/ProductList";
-import CartView from "@/components/CartView";
-import { BudgetCalculator } from "./components/BudgetCalculator";
-import { findBestCombination } from "./lib/products";
 
-export default function App() {
+import { ProductList } from "@/components/ProductList";
+import { CartView } from "@/components/CartView";
+import { BudgetCalculator } from "@/components/BudgetCalculator";
+
+import { findBestCombination } from "@/lib/products";
+
+export default function Home() {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
