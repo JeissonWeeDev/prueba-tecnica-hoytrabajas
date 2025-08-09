@@ -27,7 +27,6 @@ export const products = [
     category: "Electrónicos",
     description: "Último modelo con cámara triple",
     stock: 15,
-    sku: "ELEC-SM-X1-2025",
   },
   {
     id: 2,
@@ -36,7 +35,6 @@ export const products = [
     category: "Deportes",
     description: "Amortiguación avanzada para corredores",
     stock: 32,
-    sku: "DEP-ZAP-RP-2025",
   },
   {
     id: 3,
@@ -45,7 +43,6 @@ export const products = [
     category: "Hogar",
     description: "Prepara café de especialidad en casa",
     stock: 8,
-    sku: "HOG-CAF-PR-2025",
   },
   {
     id: 4,
@@ -54,7 +51,6 @@ export const products = [
     category: "Libros",
     description: "Guía completa para desarrollo con React",
     stock: 21,
-    sku: "LIB-REACT-25",
   },
   {
     id: 5,
@@ -63,6 +59,5 @@ export const products = [
     category: "Electrónicos",
     description: "Cancelación de ruido activa",
     stock: 0, // Agotado
-    sku: "ELEC-AUR-IN-2025",
   },
 ];
