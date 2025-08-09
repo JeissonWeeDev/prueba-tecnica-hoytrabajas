@@ -15,15 +15,10 @@
 
 import { products } from "@/lib/products";
 
+// GET → Devolver todos los productos
 export async function GET() {
-  return new Response(
-    JSON.stringify(products),
-    {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }
-  );
+  return new Response(JSON.stringify({ success: true, data: products }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }
-
