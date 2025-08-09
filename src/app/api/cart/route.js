@@ -1,157 +1,165 @@
-/**
- * ! Este módulo define las rutas de la API para la gestión del carrito de compras.
- *
- * * Características:
- * * - Proporciona una ruta GET para obtener el contenido actual del carrito.
- * * - Proporciona una ruta POST para agregar productos al carrito.
- *
- * ? Uso recomendado:
- * ? - GET /api/cart → No requiere body, devuelve array de productos
- * ? - POST /api/cart → Espera {productId: number}, devuelve carrito actualizado
- * ?   Ejemplo body POST: {"productId": 1}
- *
- * TODO: Implementar rutas PUT y DELETE para modificar y eliminar productos del carrito.
- *
- * @author Jeisson Leon (c) 2025
- * @license MIT
- */
-
-import { products } from "@/lib/products";
+import { NextResponse } from 'next/server';
+import { products } from '../../../lib/products.js';
 
 // Variable global para simular el carrito en memoria del servidor
 let cart = [];
 
-// GET → Devolver el contenido actual del carrito
-export async function GET() {
-  return new Response(JSON.stringify({ success: true, data: cart }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+export async function GET(request) {
+  try {
+    return NextResponse.json({
+      success: true,
+      data: cart
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Internal server error'
+      },
+      { status: 500 }
+    );
+  }
 }
 
-// POST → Agregar un producto al carrito
 export async function POST(request) {
   try {
     const { productId } = await request.json();
-
+    
     if (!productId) {
-      return new Response(
-        JSON.stringify({ success: false, message: "productId is required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'productId is required'
+        },
+        { status: 400 }
       );
     }
 
-    const product = products.find((p) => p.id === productId);
-
+    // Buscar el producto en la base de datos
+    const product = products.find(p => p.id === productId);
+    
     if (!product) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Product not found" }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Product not found'
+        },
+        { status: 404 }
       );
     }
 
     if (product.stock === 0) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Product out of stock" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Product out of stock'
+        },
+        { status: 400 }
       );
     }
 
-    const existingItemIndex = cart.findIndex((item) => item.id === productId);
-
+    // Buscar si el producto ya existe en el carrito
+    const existingItemIndex = cart.findIndex(item => item.id === productId);
+    
     if (existingItemIndex !== -1) {
+      // Si existe, incrementar cantidad
       cart[existingItemIndex].quantity += 1;
     } else {
+      // Si no existe, agregarlo al carrito
       cart.push({
         id: product.id,
         name: product.name,
         price: product.price,
-        quantity: 1,
+        quantity: 1
       });
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Product added to cart",
-        data: cart,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return NextResponse.json({
+      success: true,
+      message: 'Product added to cart',
+      data: cart
+    });
   } catch (error) {
-    return new Response(
-      JSON.stringify({ success: false, message: "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Internal server error'
+      },
+      { status: 500 }
     );
   }
 }
 
-// DELETE → Eliminar un producto del carrito
 export async function DELETE(request) {
   try {
     const { productId } = await request.json();
-
+    
     if (!productId) {
-      return new Response(
-        JSON.stringify({ success: false, message: "productId is required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'productId is required'
+        },
+        { status: 400 }
       );
     }
 
-    cart = cart.filter((item) => item.id !== productId);
+    // Filtrar el producto del carrito
+    cart = cart.filter(item => item.id !== productId);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Product removed from cart",
-        data: cart,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return NextResponse.json({
+      success: true,
+      message: 'Product removed from cart',
+      data: cart
+    });
   } catch (error) {
-    return new Response(
-      JSON.stringify({ success: false, message: "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Internal server error'
+      },
+      { status: 500 }
     );
   }
 }
 
-// PUT → Actualizar cantidad de un producto en el carrito
 export async function PUT(request) {
   try {
     const { productId, quantity } = await request.json();
-
+    
     if (!productId || quantity === undefined) {
-      return new Response(
-        JSON.stringify({
+      return NextResponse.json(
+        {
           success: false,
-          message: "productId and quantity are required",
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+          message: 'productId and quantity are required'
+        },
+        { status: 400 }
       );
     }
 
     if (quantity === 0) {
-      cart = cart.filter((item) => item.id !== productId);
+      // Si la cantidad es 0, remover el producto
+      cart = cart.filter(item => item.id !== productId);
     } else {
-      const itemIndex = cart.findIndex((item) => item.id === productId);
+      // Actualizar la cantidad
+      const itemIndex = cart.findIndex(item => item.id === productId);
       if (itemIndex !== -1) {
         cart[itemIndex].quantity = quantity;
       }
     }
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Cart updated",
-        data: cart,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return NextResponse.json({
+      success: true,
+      message: 'Cart updated',
+      data: cart
+    });
   } catch (error) {
-    return new Response(
-      JSON.stringify({ success: false, message: "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Internal server error'
+      },
+      { status: 500 }
     );
   }
 }

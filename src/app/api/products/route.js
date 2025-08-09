@@ -1,24 +1,19 @@
-/**
-* ! Este módulo define las rutas de la API para la gestión de productos.
+import { NextResponse } from 'next/server';
+import { products } from '../../../lib/products.js';
 
-* * Características:
-* * - Proporciona una ruta GET para obtener todos los productos disponibles.
-
-* ? Uso recomendado:
-* ? - Acceder a `/api/products` para obtener la lista completa de productos.
-
-* TODO: Implementar rutas POST, PUT, DELETE para la gestión completa de productos.
-
-@author Jeisson Leon (c) 2025
-@license MIT
-*/
-
-import { products } from "@/lib/products";
-
-// GET → Devolver todos los productos
-export async function GET() {
-  return new Response(JSON.stringify({ success: true, data: products }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+export async function GET(request) {
+  try {
+    return NextResponse.json({
+      success: true,
+      data: products
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Internal server error'
+      },
+      { status: 500 }
+    );
+  }
 }
