@@ -19,7 +19,7 @@ import { products } from "@/lib/products";
 // Carrito en memoria (variable global)
 let cart = [];
 
-// GET → devolver carrito actual
+//? GET → devolver carrito actual
 export async function GET() {
   return new Response(JSON.stringify(cart), {
     status: 200,
@@ -27,7 +27,7 @@ export async function GET() {
   });
 }
 
-// POST → agregar producto al carrito
+//? POST → agregar producto al carrito
 export async function POST(request) {
   try {
     const { productId } = await request.json();
@@ -36,13 +36,16 @@ export async function POST(request) {
     const product = products.find((p) => p.id === productId);
 
     if (!product) {
-      return new Response(JSON.stringify({ error: "Producto no encontrado" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "Producto no encontrado :(" }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
-    // Agregar producto al carrito
+    //? Agregar producto al carrito ---------------------
     cart.push(product);
 
     return new Response(
