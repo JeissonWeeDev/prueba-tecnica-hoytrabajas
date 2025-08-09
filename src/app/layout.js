@@ -1,6 +1,9 @@
 import { Inter } from "next/font/google";
 
-// If loading a variable font, you don't need to specify the font weight
+// Styles
+import "./globals.css";
+
+// Here i declare the Inter font from Google Fonts
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
