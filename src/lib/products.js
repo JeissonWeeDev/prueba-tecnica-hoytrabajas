@@ -40,6 +40,14 @@ export const products = [
     stock: 0, // Agotado
   },
   {
+    id: 12,
+    name: "Jabon Rey (Ultra instinto)",
+    price: 7,
+    category: "Hogar",
+    description: "Jabon multi usos para toda la familia ",
+    stock: 0,
+  },
+  {
     id: 6,
     name: "Tablet Pro 11",
     price: 549.99,
