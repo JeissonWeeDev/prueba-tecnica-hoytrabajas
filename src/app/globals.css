@@ -2,3 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './variables.css';
+@import './typography.css';
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}
