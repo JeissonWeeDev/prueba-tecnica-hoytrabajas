@@ -65,6 +65,9 @@ export default function HomePage() {
           <p className="text-gray-600">
             Encuentra la mejor combinación de productos para tu presupuesto
           </p>
+          <p className="text-gray-500 text-sm mt-2">
+            {"->"} Creado y Diseñado por <b>Jeisson Leon</b>
+          </p>
         </div>
 
         {/* Main Layout */}
